@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-def simpson(f) -> float:
-    return (1/3) * (f[0] + 4 * f[1] + 2 * f[2] + 4 * f[3] + f[4])
+def simpson(f:list) -> float:
+    return (1/1200) * (f[0] + 4 * f[1] + 2 * f[2] + 4 * f[3] + f[4])
 
 
 def main():
