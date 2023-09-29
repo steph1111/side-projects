@@ -1,0 +1,17 @@
+# Side project ideas 
+- [x] Simpson's rule
+- [ ] Wordle 
+  - [ ] Wordle game with GUI
+  - [ ] Wordle solver 
+- [ ] Vigenere brute force 
+- [ ] Graph data structure implementation 
+  - [ ] Google maps 
+  - [ ] Model pre recs for scheduler
+- [ ] Class schedule optimizer 
+- [ ] Turtle sim from scratch 
+- [ ] Actual Tiny Hawk robot 
+- [ ] Everything
+- [ ] Latex resumes 
+- [ ] Write actual code in LaTeX
+- [ ] Nand to tetris
+- [ ] Any GUI
