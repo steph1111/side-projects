@@ -13,5 +13,7 @@
 - [ ] Everything
 - [ ] Latex resumes 
 - [ ] Write actual code in LaTeX
-- [ ] Nand to tetris
+- [ ] Nand to Tetris
 - [ ] Any GUI
+- [ ] Learn assembly 
+- [ ] Write a code in only binary (the ones and zeroes!!!!) (Note: be sure to limit the number of ones and zeros for max efficiency)
