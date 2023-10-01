@@ -23,7 +23,7 @@ bool login(std::string* usr_email, std::string* usr_pass, std::unordered_map<std
     input(usr_email, usr_pass);
     log_ct++; 
   }
-  return log_ct < MAX_LOG;
+  return log_ct <= MAX_LOG;
 }
 
 void read_f(std::unordered_map<std::string,std::string>* usr_data) {
