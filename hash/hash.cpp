@@ -36,7 +36,7 @@ void read_f(std::unordered_map<std::string,std::string>* usr_data) {
 
 void write_f(std::string usr_email, std::string usr_pass) {
   std::fstream fout(FILE_NAME, std::fstream::app);
-  fout << usr_email << "\t" << usr_pass << std::endl;
+  fout << usr_email << "\t" << usr_pass << "\n";
 }
 
 int main() {
