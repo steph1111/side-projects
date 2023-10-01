@@ -13,12 +13,12 @@ void input(std::string* usr_email, std::string* usr_pass) {
   std::cin >> *usr_pass;
 }
 
-bool login(std::string* usr_email, std::string* usr_pass, std::unordered_map<std::string,std::string>* user_data) {
+bool login(std::string* usr_email, std::string* usr_pass, std::unordered_map<std::string,std::string>* usr_data) {
   int log_ct = 1;
   std::cout << "\nLOGIN\n";
   input(usr_email, usr_pass);
   
-  while(user_data->find(*usr_email) != user_data->end() && user_data->find(*usr_email)->second != *usr_pass && log_ct < MAX_LOG) {
+  while((*usr_data)[*usr_email] != *usr_pass && log_ct < MAX_LOG) {
     std::cout << "Incorrect email or password\n\n";
     input(usr_email, usr_pass);
     log_ct++; 
@@ -26,11 +26,11 @@ bool login(std::string* usr_email, std::string* usr_pass, std::unordered_map<std
   return log_ct < MAX_LOG;
 }
 
-void read_f(std::unordered_map<std::string,std::string>* user_data) {
+void read_f(std::unordered_map<std::string,std::string>* usr_data) {
   std::fstream fin(FILE_NAME);
   std::string email, pass; 
   while (fin >> email && fin >> pass) {
-    user_data->insert(std::make_pair(email, pass));
+    usr_data->insert(std::make_pair(email, pass));
   }
 }
 
@@ -42,10 +42,10 @@ void write_f(std::string usr_email, std::string usr_pass) {
 int main() {
   std::string set_email, usr_email, set_pass_1, set_pass_2, set_pass, usr_pass;
   std::hash<std::string>hash_str;
-  std::unordered_map<std::string, std::string>user_data;
+  std::unordered_map<std::string, std::string>usr_data;
   int choice;
 
-  read_f(&user_data);
+  read_f(&usr_data);
 
   do {
     std::cout << "WELCOME\n  1. New user\n  2. Existing user\nChoice (1-2): ";
@@ -56,7 +56,7 @@ int main() {
     std::cout << "\nSIGNUP\n";
     std::cout << "Email: ";
     std::cin >> set_email;
-    if (user_data.find(set_email) != user_data.end()) {
+    if (usr_data.find(set_email) != usr_data.end()) {
       std::cout << "Existing user, continuing to login\n";
       choice = 2;
     } else {
@@ -73,7 +73,7 @@ int main() {
     }
   }
   if (choice == 2) {
-    std::string msg = login(&set_email, &set_pass, &user_data) ? 
+    std::string msg = login(&set_email, &set_pass, &usr_data) ? 
     "Welcome " + set_email + "!\n" : "Exceeded " + std::string((char)(MAX_LOG + '0'), 1) + " attempts.\n";
     std::cout << msg << std::endl;
   }
