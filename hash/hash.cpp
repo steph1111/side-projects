@@ -74,7 +74,7 @@ int main() {
   }
   if (choice == 2) {
     std::string msg = login(&set_email, &set_pass, &usr_data) ? 
-    "Welcome " + set_email + "!\n" : "Exceeded " + std::string((char)(MAX_LOG + '0'), 1) + " attempts.\n";
+    "Welcome " + set_email + "!\n" : "Exceeded " + std::string(1, (char)(MAX_LOG + '0')) + " attempts.\n";
     std::cout << msg << std::endl;
   }
 
