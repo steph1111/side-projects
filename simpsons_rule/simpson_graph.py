@@ -1,7 +1,8 @@
-import math
+# import math
 import numpy as np
+import matplotlib.pyplot as plt
 
-def simpson(x_0:float, x_n:float, func, n:int=100) -> float:
+def simpson(x_0:float, x_n:float, func, n:int=100, plot:bool=True) -> float:
   """  
   Find the definite integral using the simpson's rule
   Params:
@@ -20,16 +21,32 @@ def simpson(x_0:float, x_n:float, func, n:int=100) -> float:
   # Simpson's rule
   for i, x_i in enumerate(np.arange(x_0 + h, x_n, h)):
     result += 2 * func(x_i) if not i % 2 else 4 * func(x_i)
-  return h / 3 * result
+  result = h / 3 * result
+  if plot:
+    plot_f(x_0, x_n, func, result)
+  return result
+
+def plot_f(x_0:float, x_n:float, func, result:float, n:int=100):
+  """
+  Plot the function in a window
+  Need to have matplotlib installed
+  """
+  x = np.linspace(x_0, x_n, n)
+  y = func(x)
+  plt.plot(x, y, "-b", label="f(x)")
+  plt.title(f"$\int^{x_0}_{x_n}f(x)dx={result:.5f}$", loc = 'left')
+  plt.legend(loc="upper left")
+  plt.fill_between(x, y, color="skyblue", alpha=0.5)
+  plt.show()
 
 def f(x:float) ->float:
   """
   Any math function, helper to simpson()
   """
-  return (math.pow(x, 3) / 3.0) + math.sin(2*x)
+  return np.sin(np.pi*x)+2
 
 def main():
-  print(simpson(2, 3, f, 10))
+  print(simpson(0, 8, f, 1000))
 
 if __name__ == "__main__":
   main()
