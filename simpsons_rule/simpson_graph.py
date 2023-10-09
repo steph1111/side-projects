@@ -34,7 +34,7 @@ def plot_f(x_0:float, x_n:float, func, result:float, n:int=100):
   x = np.linspace(x_0, x_n, n)
   y = func(x)
   plt.plot(x, y, "-b", label="f(x)")
-  plt.title(f"$\int^{x_0}_{x_n}f(x)dx={result:.5f}$", loc = 'left')
+  plt.title(f"$\int^{x_n}_{x_0}f(x)dx={result:.5f}$", loc = 'left')
   plt.legend(loc="upper left")
   plt.fill_between(x, y, color="skyblue", alpha=0.5)
   plt.show()
