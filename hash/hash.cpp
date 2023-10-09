@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <utility>
 #include <fstream>
+#include <functional>
 
 const int MAX_LOG = 5;
 const std::string FILE_NAME = "hash.txt";
@@ -13,28 +14,30 @@ void input(std::string* usr_email, std::string* usr_pass) {
   std::cin >> *usr_pass;
 }
 
-bool login(std::string* usr_email, std::string* usr_pass, std::unordered_map<std::string,std::string>* usr_data) {
+bool login(std::string* usr_email, std::string* usr_pass, std::unordered_map<std::string,std::size_t>* usr_data) {
   int log_ct = 1;
   std::cout << "\nLOGIN\n";
   input(usr_email, usr_pass);
   
-  while((*usr_data)[*usr_email] != *usr_pass && log_ct < MAX_LOG) {
+  while((*usr_data)[*usr_email] != std::hash<std::string>()(*usr_pass) && log_ct < MAX_LOG) {
     std::cout << "Incorrect email or password\n\n";
     input(usr_email, usr_pass);
     log_ct++; 
   }
-  return (*usr_data)[*usr_email] == *usr_pass;
+  return (*usr_data)[*usr_email] ==  std::hash<std::string>()(*usr_pass);
 }
 
-void read_f(std::unordered_map<std::string,std::string>* usr_data) {
+void read_f(std::unordered_map<std::string,std::size_t>* usr_data) {
   std::fstream fin(FILE_NAME);
-  std::string email, pass; 
+  std::string email;
+  std::size_t pass; 
+  
   while (fin >> email && fin >> pass) {
     usr_data->insert(std::make_pair(email, pass));
   }
 }
 
-void write_f(std::string usr_email, std::string usr_pass) {
+void write_f(std::string usr_email, std::size_t usr_pass) {
   std::fstream fout(FILE_NAME, std::fstream::app);
   fout << usr_email << "\t" << usr_pass << "\n";
 }
@@ -42,7 +45,8 @@ void write_f(std::string usr_email, std::string usr_pass) {
 int main() {
   std::string set_email, usr_email, set_pass_1, set_pass_2, set_pass, usr_pass;
   std::hash<std::string>hash_str;
-  std::unordered_map<std::string, std::string>usr_data;
+  std::unordered_map<std::string, std::size_t>usr_data;
+  std:size_t hash_val_1, hash_val_2;
   int choice;
 
   read_f(&usr_data);
@@ -67,8 +71,7 @@ int main() {
         std::cin >> set_pass_2;
         std::cout << std::endl;
       } while(set_pass_1 != set_pass_2);
-      set_pass = set_pass_1;
-      write_f(set_email, set_pass);
+      write_f(set_email, std::hash<std::string>()(set_pass_1));
       std::cout << "Account created\n";
     }
   }
