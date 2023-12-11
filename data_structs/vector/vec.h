@@ -408,10 +408,60 @@ class vec {
             }
             return maximum;
         }
+    
+
+        void sort() {
+            m_sort(this->arr_, this->size_);
+            // switch (mode) {
+            //     case 'm':
+            //         m_sort(this->arr_, this->size_);
+            //         break;
+            //     case 'q':
+            //         break;
+            // }
+        }
 
         // Sorts the vector using merge sort 
-        void sort() {       // TODO FIX THIS
+        static void m_sort(T* array, size_t arr_size) {       // TODO FIX THIS
+            if (arr_size <= 1) return; // Base case
+            
+            int l_size = arr_size / 2;
+            int r_size = arr_size - l_size;
+            T *l_arr = new T[l_size];
+            T *r_arr = new T[r_size];
+            
+            // Copy elements from array to left and right arrays respectively
+            for (int i = 0, r = 0; i < arr_size; i++) {
+                if (i < l_size) {
+                    l_arr[i] = array[i];
+                } else {
+                    r_arr[r++] = array[i];
+                }
+            }
+          
+            // Recursive call
+            m_sort(r_arr, r_size);
+            m_sort(l_arr, l_size);
+            
+            // Merge
+            int i = 0, l = 0, r = 0;
+            while (l < l_size && r < r_size) {
+                if (l_arr[l] < r_arr[r]) {
+                    array[i++] = l_arr[l++];
+                } else {
+                    array[i++] = r_arr[r++];
+                }
+            }
+            while (l < l_size) {
+                array[i++] = l_arr[l++];
+            }
+            while (r < r_size) {
+                array[i++] = r_arr[r++];
+            } 
 
+            // Delete arrays when done with them
+            delete[] l_arr;
+            delete[] r_arr;
         }
 
         /**
@@ -529,7 +579,7 @@ class vec {
     private:
         std::size_t size_ = 0; // The current size_ occupied by data
         std::size_t cap_ = 2; // The cap_acity of the array before needing realocation
-        T *arr_ = new T[this->cap_];; // An array of type T
+        T *arr_ = new T[this->cap_]; // An array of type T
 };
 
 # endif
