@@ -2,11 +2,13 @@
 #include "vec.h"
 
 int main() {
-    vec<int> test = {1, 2, 3, 4, 5, 6};
+    vec<int> test = {3, 1, 2, 3, 5, 3, 3, 3, 3};
 
-    std::cout << test << std::endl;
-    for (int i = 0; i < 20; i++) test.push_back(i);
-    std::cout << test << std::endl;
+    std::cout << "List" << test << std::endl;
+    std::cout << "SIZE: " << test.size() << std::endl;
+    test.remove(3);
+   std::cout << "List" << test << std::endl;
+    std::cout << "SIZE: " << test.size() << std::endl;
 
     return 0;
 }

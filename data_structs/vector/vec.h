@@ -410,7 +410,9 @@ class vec {
         }
 
         // Sorts the vector using merge sort 
-        void sort();
+        void sort() {       // TODO FIX THIS
+
+        }
 
         /**
          * Modifies the vector to contain no duplicate elements
@@ -422,13 +424,13 @@ class vec {
          * 
          * @param val Value of the elements to be removed
          */
-        // TODO FIX THIS
         void remove(const T& val) {
-            int count = 0;
-            for (int i = 0; i < this->size_ - 1; i++) {
-                if (this->arr_[i] == val) {
-                    this->arr_[i] = this->arr_[i + 1];
-                    count++, i--;
+            int count = 0; 
+            for (int i = 0, j = 0; i < this->size_; i++) {
+                if (this->arr_[i] != val) {
+                    this->arr_[j++] = this->arr_[i];
+                } else {
+                    count++;
                 }
             }   
             this->resize(this->size_ - count);   
