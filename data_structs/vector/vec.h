@@ -40,7 +40,7 @@ class vec {
         */
         vec(std::size_t new_size) {
             this->size_ = new_size;
-            this->cap_ = new_size * 2;
+            this->cap_ = new_size;
             this->arr_ = new T[this->cap_];
         }
 
@@ -52,7 +52,7 @@ class vec {
         */
         vec(std::size_t new_size, const T& val) {
             this->size_ = new_size;
-            this->cap_ = new_size * 2;
+            this->cap_ = new_size;
             arr_ = new T[this->cap_];
             for (std::size_t i = 0; i < this->size_; i++) {
                 this->arr_[i] = val;
@@ -93,23 +93,145 @@ class vec {
         }
 
         /**
-         * Requests that the vector capacity be at least enough 
-         * to contain 'new_cap' elements
+         * Replaces the contents of this vector with a copy of each element 
+         * in 'that', in the same order.
          * 
-         * @param new_cap The new capacity of the vector
+         * @param that the vec from which to copy
         */
-        void reserve(std::size_t new_cap) { 
-            // Insures the new capacity is greater than the current 
-            // allocated capacity, if not, the function does nothing
-            if (new_cap > this->cap_) {
-                T *new_arr = new T[new_cap];
-                for (std::size_t i = 0; i < this->size_; i++) {
-                    new_arr[i] = this->arr_[i];
-                }
-                delete[] this->arr_;
-                this->cap_ = new_cap;
-                this->arr_ = new_arr;
+        vec& operator=(const vec<T>& that) {
+            this->clear();
+            for (std::size_t i = 0; i < this->size_; i++) {
+                this->push_back(that.arr_[i]);
             }
+            return *this;
+        }
+
+        /**
+         * Replaces the contents of this vector with a copy of each element 
+         * in 'init_list', in the same order.
+         * 
+         * @param init_list the std::initializer_list from which to copy
+        */
+        vec& operator=(std::initializer_list<T> init_list) {
+            this->clear();
+            for (const auto& val : init_list) {
+                this->push_back(val);
+            }
+            return *this;
+        }
+
+        // Assign
+        // Assign range
+
+        /**
+         * Returns a reference to the element at position 'index' 
+         * in the vector. The function automatically checks whether 'index' 
+         * is within the bounds of valid elements in the vector, 
+         * throwing an out_of_range exception if it is not
+         * 
+         * @param index Position of an element in the vector
+         * @return Access to an element at an index
+        */
+        T& at(std::size_t index) {
+            if (index < 0 || index >= this-> size_) {
+                throw std::out_of_range("Index out of range");
+            }
+            this->sorted_ = false;
+            return this->arr_[index];
+        }
+
+        /**
+         * Returns element at position 'index' 
+         * in the vector. The function automatically checks whether 'index' 
+         * is within the bounds of valid elements in the vector, 
+         * throwing an out_of_range exception if it is not
+         * 
+         * @param index Position of an element in the vector
+         * @return Access to an element at an index
+        */
+        T at(std::size_t index) const {
+            if (index < 0 || index >= this-> size_) {
+                throw std::out_of_range("Index out of range");
+            }
+            return this->arr_[index];
+        }
+
+        /**
+         * Returns a reference to the element at position 'index' 
+         * in the vector. The function does not bounds check, 
+         * if bounds checking is required, .at() should be used
+         * 
+         * @param index Position of an element in the vector
+         * @return Access to an element at an index
+        */
+        T& operator[](std::size_t index) { 
+            this->sorted_ = false;
+            return this->arr_[index];
+        }
+
+        /**
+         * Returns a element at position 'index' 
+         * in the vector. The function does not bounds check, 
+         * if bounds checking is required, .at() should be used
+         * 
+         * @param index Position of an element in the vector
+         * @return Access to an element at an index
+        */
+        T operator[](std::size_t index) const { return this->arr_[index]; }
+
+
+        /**
+         * The first element of the vector, or the
+         * element at index zero
+         * 
+         * @return The first element
+        */
+        T front() const {
+            if (this->size_ == 0) {
+                throw std::domain_error("Vector is empty");
+            }
+            return this->arr_[0];
+        }
+
+        /**
+         * Access the first element of the vector, or the
+         * element at index zero
+         * 
+         * @return access to the first element
+        */
+        T& front() {
+            if (this->size_ == 0) {
+                throw std::domain_error("Vector is empty");
+            }
+            this->sorted_ = false;
+            return this->arr_[0];
+        }
+
+        /**
+         * The last element of the vector, or the 
+         * element at size() - 1
+         * 
+         * @return The first element
+        */
+        T back() const {
+            if (this->size_ == 0) {
+                throw std::domain_error("Vector is empty");
+            }
+            return this->arr_[this->size_ - 1];
+        }
+
+        /**
+         * Access the last element of the vector, or the 
+         * element at size() - 1
+         * 
+         * @return access to the first element
+        */
+        T& back() {
+            if (this->size_ == 0) {
+                throw std::domain_error("Vector is empty");
+            }
+            this->sorted_ = false;
+            return this->arr_[this->size_ - 1];
         }
 
         /**
@@ -133,11 +255,108 @@ class vec {
         // Reverse iterator end
 
         /**
+         * Is the vector empty (if the size() is zero)
+         * 
+         * @return true if the vector is empty
+        */
+        bool empty() const { return this->size_ == 0; }
+
+        /**
          * Returns the number of elements in the vector
          * 
          * @return Returns the number of elements in the vector
         */
         std::size_t size() const { return this->size_; }
+
+        // max_size
+
+        /**
+         * Requests that the vector capacity be at least enough 
+         * to contain 'new_cap' elements
+         * 
+         * @param new_cap The new capacity of the vector
+        */
+        void reserve(std::size_t new_cap) { 
+            // Insures the new capacity is greater than the current 
+            // allocated capacity, if not, the function does nothing
+            if (new_cap > this->cap_) {
+                T *new_arr = new T[new_cap];
+                for (std::size_t i = 0; i < this->size_; i++) {
+                    new_arr[i] = this->arr_[i];
+                }
+                delete[] this->arr_;
+                this->cap_ = new_cap;
+                this->arr_ = new_arr;
+            }
+        }
+
+        /**
+         * Returns the size of allocated storage capacity
+         * 
+         * @return Returns the size of allocated storage capacity
+        */
+        std::size_t capacity() const { return this->cap_; }
+
+        // TODO: Finish this
+        void shrink_to_fit(std::size_t new_cap) {
+            T* new_arr = new T[new_cap]
+            for (std::size_t i = 0; i < new_cap && i < this_size_; i++) {
+                new_arr[i] = 
+            }
+        }
+
+        /**
+         * Removes all elements from the vector (which are distroyed)
+         * leaving the vector with a size of zero
+        */
+        void clear() {
+            delete[] this->arr_;
+            this->size_ = 0;
+            this->cap_ = 2;
+            this->arr_ = new T[this->cap_];
+        }
+
+        // insert 
+        // insert_range
+        // emplace 
+
+        /**
+         * Removes from the container an element at an index
+         * 
+         * @param index Index of the element to be removed
+         */
+        void erase(const int& index) {
+            for (int i = index; i < this->size_ - 1; i++) {
+                this->arr_[i] = this->arr_[i + 1];
+            }
+            this->pop_back();
+        }
+
+        /**
+         * Adds an element to the back of the vector
+         * 
+         * @param val The value to append
+        */
+        void push_back(const T& val) {
+            if (this->size_ >= this->cap_) {
+                this->reserve(this->cap_ * 2);
+            }
+            this->arr_[this->size_++] = val;
+            this->sorted_ = false;
+        }
+
+        // emplace_back
+        // append_range
+
+        /**
+         * Removes the last element of the vector
+        */
+        void pop_back() {
+            if (this->size_ == 0) {
+                throw std::domain_error("Vector is empty");
+            }
+            this->size_--;
+        }
 
         /**
          * Resizes the vector so that it contains 'new_size' elements.
@@ -152,7 +371,7 @@ class vec {
             while(this->size_ < new_size) {
                 this->push_back(val);
             }
-        }
+        }      
 
         /**
          * Resizes the vector so that it contains 'new_size' elements.
@@ -169,156 +388,14 @@ class vec {
             }
         }
 
-        /**
-         * Returns the size of allocated storage capacity
-         * 
-         * @return Returns the size of allocated storage capacity
-        */
-        std::size_t capacity() const { return this->cap_; }
-
-        /**
-         * Is the vector empty (if the size() is zero)
-         * 
-         * @return true if the vector is empty
-        */
-        bool empty() const { return this->size_ == 0; }
-
-        /**
-         * Returns a reference to the element at position 'index' 
-         * in the vector. The function does not bounds check, 
-         * if bounds checking is required, .at() should be used
-         * 
-         * @param index Position of an element in the vector
-         * @return Access to an element at an index
-        */
-        T& operator[](std::size_t index) { return this->arr_[index]; }
-
-        /**
-         * Returns a reference to the element at position 'index' 
-         * in the vector. The function automatically checks whether 'index' 
-         * is within the bounds of valid elements in the vector, 
-         * throwing an out_of_range exception if it is not
-         * 
-         * @param index Position of an element in the vector
-         * @return Access to an element at an index
-        */
-        T& at(std::size_t index) {
-            if (index < 0 || index >= this-> size_) {
-                throw std::out_of_range("Index out of range");
-            }
-            return this->arr_[index];
-        }
-
-        /**
-         * Access the first element of the vector, or the
-         * element at index zero
-         * 
-         * @return access to the first element
-        */
-        T& front() const {
-            if (this->size_ == 0) {
-                throw std::domain_error("Vector is empty");
-            }
-            return this->arr_[0];
-        }
-
-        /**
-         * Access the last element of the vector, or the 
-         * element at size() - 1
-         * 
-         * @return access to the first element
-        */
-        T& back() const {
-            if (this->size_ == 0) {
-                throw std::domain_error("Vector is empty");
-            }
-            return this->arr_[this->size_ - 1];
-        }
-
-        /**
-         * Adds an element to the back of the vector
-         * 
-         * @param val The value to append
-        */
-        void push_back(const T& val) {
-            if (this->size_ >= this->cap_) {
-                this->reserve(this->cap_ * 2);
-            }
-            this->arr_[this->size_] = val;
-            this->size_++;
-        }
-
-        /**
-         * Removes the last element of the vector
-        */
-        void pop_back() {
-            if (this->size_ == 0) {
-                throw std::domain_error("Vector is empty");
-            }
-            this->size_--;
-        }
-        
-        /**
-         * Removes all elements from the vector (which are distroyed)
-         * leaving the vector with a size of zero
-        */
-        void clear() {
-            delete[] this->arr_;
-            this->size_ = 0;
-            this->cap_ = 2;
-            this->arr_ = new T[this->cap_];
-        }
-
-        /**
-         * Replaces the contents of this vector with a copy of each element 
-         * in 'that', in the same order.
-         * 
-         * @param that the vec from which to copy
-     */
-        vec& operator=(const vec<T>& that) {
-            this->clear();
-            for (std::size_t i = 0; i < this->size_; i++) {
-                this->push_back(that.arr_[i]);
-            }
-            return *this;
-        }
-
-        /**
-         * Replaces the contents of this vector with a copy of each element 
-         * in 'init_list', in the same order.
-         * 
-         * @param init_list the std::initializer_list from which to copy
-     */
-        vec& operator=(std::initializer_list<T> init_list) {
-            this->clear();
-            for (const auto& val : init_list) {
-                this->push_back(val);
-            }
-            return *this;
-        }
-
-        /**
-         * Compares this vector with 'that' for inequality.
-         * 
-         * @return whether the two vectors do not contain the same number of 
-         * elements, with the same values, in the same order
-     */
-        bool operator!=(const vec<T>& that) const {
-            // If the sizes are different, the vectors are not equal
-            if (this->size_ != that.size_) return true;
-            // If the sizes are the same, iterate to find if there are any differences
-            for (std::size_t i = 0; i < this->size_; i++) {
-                if (this->arr_[i] != that.arr_[i]) return true;
-            }
-            return false;
-        }
+        // swap
 
         /**
          * Compares this vector with another for equality.
          * 
          * @return whether the two vectors contain the same number of 
          * elements, with the same values, in the same order
-     */
+        */
         bool operator==(const vec<T>& that) const {
             // If the sizes are different, the vectors are not equal
             if (this->size_ != that.size_) return false;
@@ -330,11 +407,27 @@ class vec {
         }
 
         /**
+         * Compares this vector with 'that' for inequality.
+         * 
+         * @return whether the two vectors do not contain the same number of 
+         * elements, with the same values, in the same order
+        */
+        bool operator!=(const vec<T>& that) const {
+            // If the sizes are different, the vectors are not equal
+            if (this->size_ != that.size_) return true;
+            // If the sizes are the same, iterate to find if there are any differences
+            for (std::size_t i = 0; i < this->size_; i++) {
+                if (this->arr_[i] != that.arr_[i]) return true;
+            }
+            return false;
+        }
+
+        /**
          * Inserts this vector into an ostream, with the format [element1, element2, element3, ...].
          * 
          * @param out ostream object where the list is inserted
          * @param vector Tkhe list object to insert
-     */
+        */
         friend std::ostream& operator<<(std::ostream& out, const vec<T>& vector) {
             out << "[";
             for (std::size_t i = 0; i < vector.size_; i++) {
@@ -351,7 +444,7 @@ class vec {
          * 
          * @param val The item to search for 
          * @return The index of the first occurance of 'val', if not found returns -1
-         */
+        */
         std::size_t search(const T& val) const {
             for (std::size_t i = 0; i < this->size_; i++) {
                 if (this->arr_[i] == val) return i;
@@ -409,7 +502,12 @@ class vec {
             return maximum;
         }
     
-
+        /**
+         * Sorts the vector in accending order
+         * 
+         * TODO: Different sort algos 
+         * TODO: Accend vs decend
+        */
         void sort() {
             m_sort(this->arr_, this->size_);
             // switch (mode) {
@@ -419,16 +517,25 @@ class vec {
             //     case 'q':
             //         break;
             // }
+            this->sorted_ = true;
         }
 
-        // Sorts the vector using merge sort 
-        static void m_sort(T* array, size_t arr_size) {       // TODO FIX THIS
+        /**
+         * Helper static function for sort() which sorts the function
+         * using merge sort
+         * Time complexity: O(N log(N))
+         * Space complexity: O(N)
+         * 
+         * @param array The array to sort 
+         * @param arr_size The size of the array to sotr
+        */ 
+        static void m_sort(T* array, size_t arr_size) {
             if (arr_size <= 1) return; // Base case
             
             int l_size = arr_size / 2;
             int r_size = arr_size - l_size;
-            T *l_arr = new T[l_size];
-            T *r_arr = new T[r_size];
+            T* l_arr = new T[l_size];
+            T* r_arr = new T[r_size];
             
             // Copy elements from array to left and right arrays respectively
             for (int i = 0, r = 0; i < arr_size; i++) {
@@ -464,10 +571,59 @@ class vec {
             delete[] r_arr;
         }
 
+        
+        /**
+         * Bogobogosort specifies how one should check if the list of numbers is sorted. 
+         * It does it recursively, because as anyone who knows anything at all about computer science knows, 
+         * recursion is always good and cool. To check if the list is sorted, use the following procedure:
+         * 
+         *  1. Make a copy of the list of numbers.
+         *  2. Sort the first n-1 elements of the copy using bogobogosort.
+         *  3. Check to see if the nth element of the sorted copy is greater than the highest element of the first n-1 elements. 
+         *     If so, the copy is now sorted, else randomise the order of the elements of the copy and go to step 2.
+         *  4. Check to see if the copy is in the same order as the original list.
+        */
+        static void bogobogosort() {
+            T* cpy_arr = new T[this->size];
+            for (size_t i = 0; i < this)
+
+        } 
+        
+        /**
+         * Checks if the list is sorted in acending order
+         * 
+         * @return true if the vector is sorted, false if not
+        */
+        bool sorted() {
+            if (!this->sorted_) {
+                for (size_t i = 1; i < this->size_; i++) {
+                    if (this->arr_[i] < this->arr_[i - 1]) {
+                        this->sorted_ = false;
+                        return false;
+                    }
+                }
+            }
+            this->sorted_ = true;
+            return true;
+        }
+
         /**
          * Modifies the vector to contain no duplicate elements
+         * between 'first' and 'last'
+         * 
+         * @param first Starting positition to apply function 
+         * @param last Ending position to apply function
         */
-        void unique();
+       template< class ForwardIt>
+        ForwardIt unique(ForwardIt first, ForwardIt last) {
+            if (first == last) return;
+            
+           
+
+            while (++first != last) {
+
+            }
+        }
 
         /**
          * Removes from the container all the elements that compare equal to 'val'.
@@ -486,17 +642,7 @@ class vec {
             this->resize(this->size_ - count);   
         }
 
-        /**
-         * Removes from the container an element at an index
-         * 
-         * @param index Index of the element to be removed
-         */
-        void erase(const int& index) {
-            for (int i = index; i < this->size_ - 1; i++) {
-                this->arr_[i] = this->arr_[i + 1];
-            }
-            this->pop_back();
-        }
+
 
     // https://www.google.com/search?channel=fs&client=ubuntu-sn&q=iterator+cpp 
     // class Iterator {
@@ -579,7 +725,15 @@ class vec {
     private:
         std::size_t size_ = 0; // The current size_ occupied by data
         std::size_t cap_ = 2; // The cap_acity of the array before needing realocation
-        T *arr_ = new T[this->cap_]; // An array of type T
+        T* arr_ = new T[this->cap_]; // An array of type T
+        
+        // enum state : unsigned char {
+        //     f_,       // False 
+        //     t_,       // True
+        //     n_        // None
+        // };
+        bool sorted_ = false; 
+        
 };
 
 # endif
